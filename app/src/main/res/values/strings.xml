@@ -5,4 +5,12 @@
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="login_bold">LOGIN</string>
+
+    //Home
+    <string name="welcome">Welcome, Egia</string>
+    <string name="recenty">Recently Hot</string>
+    <string name="konten_seminar">Seminar Workshop IoT 2023 Seminar Workshop IoT 2023</string>
+    <string name="why">Why Telkom University Link?</string>
+    <string name="facts">Telkom University Facts:</string>
+    <string name="konten_why">“Telkom University Link is made spesific for Telkom University student, it can provide you lots of knownledge and experience with our features, no need to worry about your career we can discuss it here.”</string>
 </resources>

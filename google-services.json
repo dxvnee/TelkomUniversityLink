@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "207317675087",
+    "project_id": "telkomuniversitylink",
+    "storage_bucket": "telkomuniversitylink.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:207317675087:android:b581790495ebdf7b090e3a",
+        "android_client_info": {
+          "package_name": "org.d3if3121.telkomuniversitylink"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDiLbuaxRyVUctix4WxacHCM7dvAZOC5F0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
