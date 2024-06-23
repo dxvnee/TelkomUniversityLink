@@ -61,7 +61,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.d3if3121.telkomuniversitylink.R
-import org.d3if3121.telkomuniversitylink.model.LoginRequest
 import org.d3if3121.telkomuniversitylink.navigation.Screen
 import org.d3if3121.telkomuniversitylink.ui.theme.Warna
 import org.d3if3121.telkomuniversitylink.viewmodel.UserViewModel

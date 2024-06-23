@@ -3,9 +3,8 @@ package org.d3if3121.telkomuniversitylink.network
 
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import org.d3if3121.telkomuniversitylink.model.LoginRequest
-import org.d3if3121.telkomuniversitylink.model.RegisterRequest
-import org.d3if3121.telkomuniversitylink.model.RegisterResponse
+import org.d3if3121.telkomuniversitylink.model.OpStatus
+import org.d3if3121.telkomuniversitylink.model.UserRegister
 import org.d3if3121.telkomuniversitylink.model.User
 import org.d3if3121.telkomuniversitylink.model.ProjectResponse
 import org.d3if3121.telkomuniversitylink.model.UserGroup
@@ -32,8 +31,8 @@ private val retrofit = Retrofit.Builder()
 interface ApiService {
     @POST("/register")
     suspend fun registerUser(
-        @Body request: RegisterRequest
-    ): RegisterResponse
+        @Body request: UserRegister
+    ): OpStatus
 
     @POST("/v1/posts/login")
     suspend fun login(

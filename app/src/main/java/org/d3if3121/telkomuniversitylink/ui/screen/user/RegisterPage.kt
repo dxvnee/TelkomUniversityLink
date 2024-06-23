@@ -55,7 +55,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.d3if3121.telkomuniversitylink.R
-import org.d3if3121.telkomuniversitylink.model.RegisterRequest
+import org.d3if3121.telkomuniversitylink.model.UserRegister
 import org.d3if3121.telkomuniversitylink.model.User
 import org.d3if3121.telkomuniversitylink.navigation.Screen
 import org.d3if3121.telkomuniversitylink.ui.theme.Warna
@@ -88,7 +88,7 @@ fun RegisterPage(
         email = email,
         password = password
     )
-    val userApi = RegisterRequest(
+    val newUser = UserRegister(
         password = password,
         name = userName,
         email = email
@@ -338,7 +338,7 @@ fun RegisterPage(
                         return@ButtonMerah
                     }
                     if (!userNameError && !emailError && !passwordError) {
-                        viewModel.registerWithApi(userApi)
+                        viewModel.registerUser(newUser)
                         return@ButtonMerah
                     }
 

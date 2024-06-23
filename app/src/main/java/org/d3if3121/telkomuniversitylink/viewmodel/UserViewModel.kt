@@ -3,24 +3,20 @@ package org.d3if3121.telkomuniversitylink.viewmodel
 
 import android.content.ContentValues.TAG
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import org.d3if3121.telkomuniversitylink.firebase.UserRepository
-import org.d3if3121.telkomuniversitylink.model.LoginRequest
-import org.d3if3121.telkomuniversitylink.model.LoginResponse
-import org.d3if3121.telkomuniversitylink.model.RegisterRequest
+import org.d3if3121.telkomuniversitylink.model.UserRegister
 import org.d3if3121.telkomuniversitylink.model.User
 import org.d3if3121.telkomuniversitylink.model.UserGroup
 import org.d3if3121.telkomuniversitylink.network.UserApi
-import retrofit2.HttpException
 
 class UserViewModel : ViewModel() {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
@@ -38,12 +34,25 @@ class UserViewModel : ViewModel() {
     private val _errorMsg = MutableStateFlow<String?>(null)
     val errorMsg: StateFlow<String?> = _errorMsg
 
+    var status = MutableStateFlow(ApiStatus.LOADING)
+        private set
 
-    fun registerWithApi(user: RegisterRequest) {
+    var errorMessage = mutableStateOf<String?>(null)
+        private set
+
+
+
+
+    fun registerUser(user: UserRegister) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val response = UserApi.service.registerUser(user)
-                _registrationSuccess.value = true
+                val result = UserApi.service.registerUser(user)
+
+                if (result.status == "success")
+
+                else
+                    throw Exception(result.message)
+
             } catch (e: Exception) {
                 _registrationError.value = e.message
             }
@@ -193,3 +202,5 @@ class UserViewModel : ViewModel() {
     }
 
 }
+
+enum class ApiStatus { LOADING, SUCCESS, FAILED }
