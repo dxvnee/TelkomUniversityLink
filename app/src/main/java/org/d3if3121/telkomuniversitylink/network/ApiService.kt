@@ -3,17 +3,18 @@ package org.d3if3121.telkomuniversitylink.network
 
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import org.d3if3121.telkomuniversitylink.model.LoginStatus
 import org.d3if3121.telkomuniversitylink.model.OpStatus
+import org.d3if3121.telkomuniversitylink.model.Profile
+import org.d3if3121.telkomuniversitylink.model.Project
 import org.d3if3121.telkomuniversitylink.model.UserRegister
 import org.d3if3121.telkomuniversitylink.model.User
-import org.d3if3121.telkomuniversitylink.model.ProjectResponse
-import org.d3if3121.telkomuniversitylink.model.UserGroup
-import org.d3if3121.telkomuniversitylink.model.WebinarResponse
-
+import org.d3if3121.telkomuniversitylink.model.Webinar
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Path
 
@@ -34,43 +35,30 @@ interface ApiService {
         @Body request: UserRegister
     ): OpStatus
 
-    @POST("/v1/posts/login")
-    suspend fun login(
-        @Body request: LoginRequest
+    @POST("/login")
+    suspend fun loginUser(
+        @Body username: String,
+        @Body password: String,
+    ): LoginStatus
+
+    @GET("/getUser/{id}")
+    suspend fun getUser(
+        @Path("id") userId: String,
     ): User
 
+    @GET("/getProfile")
+    suspend fun getProfile(
+        @Header("Authorization") username: String,
+    ): Profile
 
-    @GET("/v1/posts/users/{user_id}")
-    suspend fun getUserGroup(
-        @Path("user_id") id: Int
-    ): UserGroup
+    @GET("/project")
+    suspend fun getProject(
+    ): List<Project>
 
+    @GET("/webinar")
+    suspend fun getWebinar(
+    ): List<Webinar>
 
-    @GET("/v1/posts/users/{user_id}/projects/{project_id}")
-    suspend fun getUserData()
-
-    @GET("/v1/posts/webinars/")
-    suspend fun getAllWebinars(): List<WebinarResponse>
-
-    @GET("/v1/posts/projects/")
-    suspend fun getAllProjects(): List<ProjectResponse>
-
-    @GET("/v1/posts/projects/{project_id}")
-    suspend fun getCurrentProject(
-        @Path("project_id") id: Int
-    ): ProjectResponse
-
-    @POST("/v1/posts/users/{user_id}/projects/{project_id}")
-    suspend fun registerToProject(
-        @Path("user_id") userId: Int,
-        @Path("project_id") id: Int
-    ): Boolean
-
-    @POST("/v1/posts/users/{user_id}/webinars/{webinar_id}")
-    suspend fun registerToWebinar(
-        @Path("user_id") userId: Int,
-        @Path("webinar_id") id: Int
-    ): Boolean
 
 
 }

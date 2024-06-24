@@ -10,11 +10,14 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,9 +40,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.d3if3121.telkomuniversitylink.R
-import org.d3if3121.telkomuniversitylink.model.WebinarResponse
+import org.d3if3121.telkomuniversitylink.model.Webinar
 import org.d3if3121.telkomuniversitylink.ui.theme.Warna
-import org.d3if3121.telkomuniversitylink.viewmodel.WebinarViewModel
+import org.d3if3121.telkomuniversitylink.viewmodel.UserViewModel
 
 @Preview(showBackground = true)
 @Composable
@@ -56,7 +59,7 @@ fun CobaSkillPage() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SkillPage(navController: NavHostController){
-val viewModel: WebinarViewModel = viewModel()
+val viewModel: UserViewModel = viewModel()
 
 
     Scaffold (
@@ -123,7 +126,7 @@ val viewModel: WebinarViewModel = viewModel()
 @Composable
 fun MenuSkill(
     topbarpadding :  PaddingValues,
-    viewModel: WebinarViewModel
+    viewModel: UserViewModel
 ){
 
     //MainColumn
@@ -168,19 +171,21 @@ fun MenuSkill(
 }
 
 @Composable
-private fun SlideVerticalCard2(viewModel: WebinarViewModel){
-    val webinarList by viewModel.webinarList.collectAsState()
-    if (webinarList != null) {
+private fun SlideVerticalCard2(viewModel: UserViewModel){
+    val webinar by viewModel.webinar.collectAsState()
+
+    if (webinar != null) {
         LazyColumn(
             modifier = Modifier.padding(start = 0.dp),
             verticalArrangement = Arrangement.spacedBy(23.dp)
         ) {
-            items(webinarList!!) {
+            items(webinar) {
                 GrayVerticalCard2(
                     webinar = it
                 )
             }
         }
+
     } else {
         Text(text = "Tidak ada webinar.")
     }
@@ -189,7 +194,7 @@ private fun SlideVerticalCard2(viewModel: WebinarViewModel){
 
 @Composable
 private fun GrayVerticalCard2(
-    webinar: WebinarResponse,
+    webinar: Webinar,
 ){
     GrayBox(height = 160) {
         Column (
@@ -226,14 +231,14 @@ private fun GrayVerticalCard2(
                             color = Warna.HitamNormal,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
-                            text = webinar.title
+                            text = webinar.name
                         )
                         Text(
                             textAlign = TextAlign.Start,
                             color = Warna.MerahNormal,
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
-                            text = webinar.subtitle
+                            text = webinar.company
                         )
 
                         Spacer(modifier = Modifier.height(10.dp))
@@ -254,7 +259,7 @@ private fun GrayVerticalCard2(
                                 color = Warna.HitamNormal,
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Normal,
-                                text = webinar.description
+                                text = webinar.content
                             )
                         }
                     }

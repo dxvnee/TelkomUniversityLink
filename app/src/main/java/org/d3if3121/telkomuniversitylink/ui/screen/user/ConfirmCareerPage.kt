@@ -40,7 +40,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.d3if3121.telkomuniversitylink.R
 import org.d3if3121.telkomuniversitylink.ui.theme.Warna
-import org.d3if3121.telkomuniversitylink.viewmodel.ProjectViewModel
 import org.d3if3121.telkomuniversitylink.viewmodel.UserViewModel
 
 @Preview(showBackground = true)
@@ -51,20 +50,14 @@ fun ConfirmCareerPreview() {
 
 @Composable
 fun CobaConfirmCareerPage() {
-    ConfirmCareerPage(rememberNavController(), 0)
+    ConfirmCareerPage(rememberNavController(), "2")
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ConfirmCareerPage(navController: NavHostController, id: Int? = null) {
-    val viewModel: ProjectViewModel = viewModel()
-    LaunchedEffect(id) {
-        if (id != null) {
-            viewModel.getCurrentProject(id)
-        } else {
-            viewModel.loadDummyProjects()
-        }
-    }
+fun ConfirmCareerPage(navController: NavHostController, id: String? = null) {
+    val viewModel: UserViewModel = viewModel()
+
 
     Scaffold(
         topBar = {
@@ -119,11 +112,11 @@ fun ConfirmCareerPage(navController: NavHostController, id: Int? = null) {
 @Composable
 fun MenuConfirmCareer(
     topbarpadding: PaddingValues,
-    viewModelProject: ProjectViewModel
+    viewModel: UserViewModel
 ) {
-    val viewModel: UserViewModel = viewModel()
-    val currentUser by viewModel.currentUser.collectAsState()
-    val currentProject by viewModelProject.currentProject.collectAsState()
+
+    val currentProfile by viewModel.currentProfile.collectAsState()
+    val currentProject by viewModel.project.collectAsState()
 
     //MainColumn
     Column(
@@ -139,8 +132,8 @@ fun MenuConfirmCareer(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            //card
-            if (currentUser != null && currentProject != null) {
+
+            if (currentProfile != null && currentProject != null) {
                 GrayBox(height = 480) {
                     Column(
                         modifier = Modifier
@@ -156,7 +149,7 @@ fun MenuConfirmCareer(
                                 fontWeight = FontWeight.SemiBold,
                             )
                             Text(
-                                text = currentUser!!.userName,
+                                text = currentProfile!!.fullname,
                                 color = Warna.HitamNormal,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.SemiBold,
@@ -165,120 +158,13 @@ fun MenuConfirmCareer(
                             Spacer(modifier = Modifier.height(20.dp))
 
                             Text(
-                                text = "Job :",
+                                text = "Location :",
                                 color = Warna.MerahNormal,
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.SemiBold,
                             )
                             Text(
-                                text = currentUser!!.job,
-                                color = Warna.HitamNormal,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                            )
-
-                            Spacer(modifier = Modifier.height(20.dp))
-
-                            Text(
-                                text = "Location: ",
-                                color = Warna.MerahNormal,
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.SemiBold,
-                            )
-                            Text(
-                                text = currentUser!!.address,
-                                color = Warna.HitamNormal,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                            )
-                            Spacer(modifier = Modifier.height(20.dp))
-
-                            Text(
-                                text = "Phone: ",
-                                color = Warna.MerahNormal,
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.SemiBold,
-                            )
-                            Text(
-                                text = currentUser!!.phone,
-                                color = Warna.HitamNormal,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                            )
-
-                            Spacer(modifier = Modifier.height(20.dp))
-
-                            Text(
-                                text = "Ordered: ",
-                                color = Warna.MerahNormal,
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.SemiBold,
-                            )
-                            Text(
-                                text = currentProject!!.name,
-                                color = Warna.HitamNormal,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                            )
-
-                            Spacer(modifier = Modifier.height(40.dp))
-                            Button(
-                                onClick = {
-                                    viewModelProject.registerToProject(currentUser!!.id, currentProject!!.id)
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .size(50.dp),
-                                shape = RoundedCornerShape(15.dp),
-                                content = {
-                                    Text(
-                                        text = "Confirm",
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 18.sp,
-                                        color = Warna.PutihNormal
-                                    )
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Warna.MerahNormal,
-                                    contentColor = Warna.PutihNormal
-                                )
-                            )
-                        }
-                    }
-                }
-            } else {
-                // Menampilkan data dummy jika currentUser atau currentProject bernilai null
-                GrayBox(height = 480) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(10.dp))
-                            .padding(20.dp)
-                    ) {
-                        Column {
-                            Text(
-                                text = "Full Name: ",
-                                color = Warna.MerahNormal,
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.SemiBold,
-                            )
-                            Text(
-                                text = "Egia Kale",
-                                color = Warna.HitamNormal,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                            )
-
-                            Spacer(modifier = Modifier.height(20.dp))
-
-                            Text(
-                                text = "Job :",
-                                color = Warna.MerahNormal,
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.SemiBold,
-                            )
-                            Text(
-                                text = "Software engineer",
+                                text = currentProfile!!.location,
                                 color = Warna.HitamNormal,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.SemiBold,
@@ -293,7 +179,7 @@ fun MenuConfirmCareer(
                                 fontWeight = FontWeight.SemiBold,
                             )
                             Text(
-                                text = "Bandung",
+                                text = currentProfile!!.location,
                                 color = Warna.HitamNormal,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.SemiBold,
@@ -307,7 +193,7 @@ fun MenuConfirmCareer(
                                 fontWeight = FontWeight.SemiBold,
                             )
                             Text(
-                                text = "0813287423",
+                                text = currentProfile!!.phone,
                                 color = Warna.HitamNormal,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.SemiBold,
@@ -322,18 +208,16 @@ fun MenuConfirmCareer(
                                 fontWeight = FontWeight.SemiBold,
                             )
                             Text(
-                                text = "Magang Web Dev",
+                                text = "currentProject!!.m",
                                 color = Warna.HitamNormal,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.SemiBold,
                             )
 
                             Spacer(modifier = Modifier.height(40.dp))
-
                             Button(
                                 onClick = {
-                                    viewModelProject.loadDummyProjects()
-                                    viewModelProject.registerToProject(1, 1)  // ID dummy
+//                                    viewModel.registerToProject(currentProfile!!.id, currentProject!!.id)
                                 },
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -356,6 +240,9 @@ fun MenuConfirmCareer(
                     }
                 }
             }
+
+
+
         }
     }
 }

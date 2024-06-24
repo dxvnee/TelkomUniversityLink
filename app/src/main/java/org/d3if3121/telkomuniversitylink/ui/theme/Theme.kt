@@ -58,7 +58,7 @@ fun TelkomUniversityLinkTheme(
         SideEffect {
             val window = (view.context as Activity).window
             window.statusBarColor = Warna.MerahNormal.toArgb()
-            window.navigationBarColor = Warna.MerahNormal.toArgb()
+            window.navigationBarColor = Warna.PutihNormal.toArgb()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
         }
     }

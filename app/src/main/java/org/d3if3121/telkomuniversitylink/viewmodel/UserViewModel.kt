@@ -13,34 +13,33 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.d3if3121.telkomuniversitylink.firebase.UserRepository
+import org.d3if3121.telkomuniversitylink.model.Profile
+import org.d3if3121.telkomuniversitylink.model.Project
 import org.d3if3121.telkomuniversitylink.model.UserRegister
 import org.d3if3121.telkomuniversitylink.model.User
-import org.d3if3121.telkomuniversitylink.model.UserGroup
+import org.d3if3121.telkomuniversitylink.model.Webinar
 import org.d3if3121.telkomuniversitylink.network.UserApi
 
 class UserViewModel : ViewModel() {
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
-
-    private val _registrationSuccess = MutableStateFlow(false)
-    val registrationSuccess: StateFlow<Boolean> = _registrationSuccess
-
-    private val _groupList = MutableStateFlow<UserGroup?>(null)
-    val groupList: StateFlow<UserGroup?> = _groupList
-
-    private val _registrationError = MutableStateFlow<String?>(null)
-    val registrationError: StateFlow<String?> = _registrationError
-
-    private val _errorMsg = MutableStateFlow<String?>(null)
-    val errorMsg: StateFlow<String?> = _errorMsg
 
     var status = MutableStateFlow(ApiStatus.LOADING)
         private set
-
     var errorMessage = mutableStateOf<String?>(null)
         private set
+    var loginSuccess = mutableStateOf<Boolean?>(false)
+        private set
 
+    private var _currentUser = MutableStateFlow<User?>(null)
+    val currentUser: StateFlow<User?> = _currentUser
 
+    private var _currentProfile = MutableStateFlow<Profile?>(null)
+    val currentProfile: StateFlow<Profile?> = _currentProfile
+
+    private var _project = MutableStateFlow<List<Project>>(emptyList())
+    val project: StateFlow<List<Project>> = _project
+
+    private var _webinar = MutableStateFlow<List<Webinar>>(emptyList())
+    val webinar : StateFlow<List<Webinar>> = _webinar
 
 
     fun registerUser(user: UserRegister) {
@@ -49,157 +48,69 @@ class UserViewModel : ViewModel() {
                 val result = UserApi.service.registerUser(user)
 
                 if (result.status == "success")
-
                 else
                     throw Exception(result.message)
 
             } catch (e: Exception) {
-                _registrationError.value = e.message
+                Log.d("UserViewModel-registerUser", "Failure: ${e.message}")
             }
         }
     }
 
-    private val _loginSuccess = MutableStateFlow(false)
-    val loginSuccess: StateFlow<Boolean> = _loginSuccess
-
-    private val _loginError = MutableStateFlow<String?>(null)
-    val loginError: StateFlow<String?> = _loginError
-
-//    fun loginUser(email: String, password: String) {
-//        viewModelScope.launch {
-//            auth.signInWithEmailAndPassword(email, password)
-//                .addOnCompleteListener { task ->
-//                    if (task.isSuccessful) {
-//                        _loginSuccess.value = true
-//                    } else {
-//                        val errorMessage = when (val exception = task.exception) {
-//                            is FirebaseAuthException -> when (exception.errorCode) {
-//                                "ERROR_INVALID_EMAIL" -> "Email tidak valid."
-//                                "ERROR_USER_NOT_FOUND" -> "Email tidak ditemukan."
-//                                "ERROR_WRONG_PASSWORD" -> "Password salah."
-//                                "ERROR_USER_DISABLED" -> "Akun dinonaktifkan."
-//                                "ERROR_TOO_MANY_REQUESTS" -> "Terlalu banyak percobaan. Coba lagi nanti."
-//                                else -> "Kesalahan autentikasi."
-//                            }
-//                            else -> exception?.message ?: "Kesalahan tidak diketahui."
-//                        }
-//                        _loginError.value = errorMessage
-//                    }
-//                }
-//        }
-//    }
-
-    fun loginWithApi(user: LoginRequest) {
+    fun loginUser(email: String, password: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                _currentUser.value = UserApi.service.login(user)
-                _loginSuccess.value = true
+                val result = UserApi.service.loginUser(email, password)
+
+                if (result.message == "Failed") {
+                    errorMessage.value = "Username/password doesn't match!"
+                }
+                if (result.message == "Success") {
+                    _currentUser.value = UserApi.service.getUser(result.userId!!)
+                    loginSuccess.value = true
+                }
+
             } catch (e: Exception) {
-                _loginError.value = e.message
+                Log.d("UserViewModel-getUser", "Failure: ${e.message}")
             }
         }
     }
 
-    // Update user profile
-    private val userRepository = UserRepository()
+    fun getProfile(userId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val result = UserApi.service.getProfile(userId);
 
-    private val _currentUser = MutableStateFlow<User?>(null)
-    val currentUser: StateFlow<User?> = _currentUser
-
-    private val _updateSuccess = MutableStateFlow(false)
-    val updateSuccess: StateFlow<Boolean> get() = _updateSuccess
-
-    private val _updateError = MutableStateFlow<String?>(null)
-    val updateError: StateFlow<String?> get() = _updateError
-
-//    init {
-//        fetchCurrentUser()
-//    }
-//
-//    private fun fetchCurrentUser() {
-//        val userId = userRepository.auth.currentUser?.uid
-//        userId?.let {
-//            fetchUserData(it)
-//        }
-//    }
-
-//    private fun fetchUserData(userId: String) {
-//        viewModelScope.launch {
-//            try {
-//                val user = userRepository.getUserById(userId)
-//                _currentUser.value = user
-//            } catch (e: Exception) {
-//                _updateError.value = e.message
-//                Log.d("UserViewModel", "Error fetching user data: ${e.message}")
-//            }
-//        }
-//    }
-
-//    fun update(userName: String, newPassword: String?, email: String, gambar: String,  onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
-//        val userId = _currentUser.value?.uid ?: return
-//        val userDocRef = userRepository.firestore.collection("users").document(userId)
-//
-//        viewModelScope.launch {
-//            try {
-//                val updates = hashMapOf<String, Any>(
-//                    "userName" to userName,
-//                    "email" to email,
-//                    "gambar" to gambar
-//                )
-//
-//                if (!newPassword.isNullOrBlank()) {
-//                    val user = userRepository.auth.currentUser
-//                    user?.updatePassword(newPassword)?.await()
-//                    updates["password"] = newPassword
-//                }
-//                userDocRef.update(updates).await()
-//                fetchUserData(userId) // Refresh current user data
-//                _updateSuccess.value = true
-//                _updateError.value = null
-//                Log.d("UserViewModel", "User profile updated successfully.")
-//                onSuccess()
-//            } catch (e: Exception) {
-//                _updateError.value = e.message
-//                _updateSuccess.value = false
-//                Log.d("UserViewModel", "Error updating user profile: ${e.message}")
-//                onFailure(e)
-//            }
-//        }
-//    }
-
-//    private fun saveUserToFirestore(user: User) {
-//        firestore.collection("users").document(user.uid)
-//            .set(user)
-//            .addOnSuccessListener {
-//                _registrationSuccess.value = true
-//            }
-//            .addOnFailureListener { e ->
-//                _registrationError.value = e.message
-//            }
-//    }
-    fun getGroup() {
-    viewModelScope.launch(Dispatchers.IO) {
-        try {
-            _groupList.value = UserApi.service.getUserGroup(_currentUser.value!!.id)
-        } catch (e: Exception) {
-            _errorMsg.value = e.message
-        }
-    }
-    }
-
-
-    fun logout() {
-        val firebaseAuth = FirebaseAuth.getInstance()
-        firebaseAuth.signOut()
-        val authStateListener = FirebaseAuth.AuthStateListener {
-            if (it.currentUser == null) {
-                Log.d(TAG, "Inside sign out success")
-            } else {
-                Log.d(TAG, "Inside sign out is not success")
+            } catch (e: Exception) {
+                Log.d("UserViewModel-getUser", "Failure: ${e.message}")
             }
         }
-        firebaseAuth.addAuthStateListener(authStateListener)
     }
+
+    fun getProject(userId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val result = UserApi.service.getProject()
+                _project.value = result
+
+            } catch (e: Exception) {
+                Log.d("UserViewModel-getUser", "Failure: ${e.message}")
+            }
+        }
+    }
+
+    fun getWebinar(userId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val result = UserApi.service.getWebinar()
+                _webinar.value = result
+
+            } catch (e: Exception) {
+                Log.d("UserViewModel-getUser", "Failure: ${e.message}")
+            }
+        }
+    }
+
 
 }
 

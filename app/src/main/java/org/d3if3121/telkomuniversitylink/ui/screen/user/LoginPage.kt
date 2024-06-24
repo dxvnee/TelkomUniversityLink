@@ -1,7 +1,9 @@
 package org.d3if3121.telkomuniversitylink.ui.screen.user
 
 
+import android.app.Activity
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -9,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,6 +25,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -43,8 +47,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -71,12 +78,16 @@ fun LoginPreview() {
     LoginPage(rememberNavController())
 }
 
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginPage(
     navController: NavHostController,
 
 ) {
+
+
     val viewModel: UserViewModel = viewModel()
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
@@ -89,60 +100,73 @@ fun LoginPage(
     var emailError by remember { mutableStateOf(false) }
     var passwordError by remember { mutableStateOf(false) }
 
-    val loginSuccess by viewModel.loginSuccess.collectAsState()
+    val loginSuccess by viewModel.loginSuccess
 
     LaunchedEffect(loginSuccess) {
-        if (loginSuccess) {
+        if (loginSuccess!!) {
             Toast.makeText(context, "Berhasil Masuk", Toast.LENGTH_SHORT).show()
             navController.navigate(Screen.MenuPage.route)
         }
     }
 
-//    LaunchedEffect(loginError) {
-//        loginError?.let {
-//            Toast.makeText(context, "Gagal Masuk: $it", Toast.LENGTH_SHORT).show()
-//            return@LaunchedEffect
-//        }
-//    }
-
-
         Column(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth().fillMaxHeight().background(Warna.PutihNormal, RectangleShape)
         ) {
 
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 38.dp),
+                        .fillMaxWidth(),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ){
-                    Image(
-                        painter = painterResource(id = R.drawable.logo),
-                        contentDescription = "App logo",
+                    Box(
                         modifier = Modifier
-                            .width(120.dp)
-                            .height(120.dp)
-                            .shadow(elevation = 20.dp, shape = CircleShape)
-                    )
-
-                    Row(
-
-                    ) {
-                        Column(
+                            .height(235.dp)
+                            .shadow(elevation = 15.dp)
+                            .background(Warna.MerahNormal, RoundedCornerShape(0.dp, 0.dp, 40.dp, 40.dp)),
 
 
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.Start
-                        ) {
-                            Text(
-                                text = stringResource(id = R.string.judul),
-                                color = Warna.PutihNormal,
-                                fontSize = 26.sp,
-                                fontWeight = FontWeight.ExtraBold,
-                                modifier = Modifier.shadow(elevation = 20.dp)
-                            )
+                    ){
+                        Column {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 35.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ){
+                                Image(
+                                    painter = painterResource(id = R.drawable.logo),
+                                    contentDescription = "App logo",
+                                    modifier = Modifier
+                                        .width(120.dp)
+                                        .height(120.dp)
+                                        .shadow(elevation = 20.dp, shape = CircleShape)
+                                )
+                            }
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(12.dp),
+                                    verticalArrangement = Arrangement.Center,
+                                    horizontalAlignment = Alignment.Start
+                                ) {
+                                    Text(
+                                        text = stringResource(id = R.string.judul),
+                                        color = Warna.PutihNormal,
+                                        fontSize = 26.sp,
+                                        fontWeight = FontWeight.ExtraBold,
+                                        modifier = Modifier.shadow(elevation = 20.dp)
+                                    )
+                                }
+                            }
+
                         }
+
                     }
                 }
 
@@ -151,8 +175,8 @@ fun LoginPage(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 250.dp, start = 20.dp, end = 20.dp, bottom = 200.dp)
-            .height(1000.dp),
+            .padding(top = 280.dp, start = 20.dp, end = 20.dp, bottom = 200.dp)
+            .height(363.dp),
 
         colors = CardDefaults.cardColors(containerColor = Warna.PutihNormal),
         elevation = CardDefaults.cardElevation(20.dp),
@@ -161,7 +185,7 @@ fun LoginPage(
     )
     {
         Column(
-            modifier = Modifier.padding(start = 24.dp, top = 18.dp, end = 24.dp)
+            modifier = Modifier.padding(start = 24.dp, top = 23.dp, end = 24.dp)
         ) {
             Text(
                 text = stringResource(id = R.string.login),
@@ -273,16 +297,13 @@ fun LoginPage(
                 )
             }
 
-
-
-
-
             ButtonMerah(
                 onClick = {
-                                viewModel.loginWithApi(LoginRequest(email, password))
+                    viewModel.loginUser(email, password)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(top = 50.dp)
                     .size(50.dp),
                 content = {
                     Text(
@@ -297,12 +318,12 @@ fun LoginPage(
 
             Column(
                 modifier = Modifier
-                    .fillMaxWidth(0.8f)
-                    .padding(16.dp),
+                    .fillMaxWidth().padding(top = 10.dp, start = 3.dp),
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Row (
+                    modifier = Modifier
+                        .fillMaxWidth(0.8f),
                     verticalAlignment = Alignment.CenterVertically
                 ){
                     Text(text = "Belum Memiliki Akun? ", fontSize = 13.sp,fontWeight = FontWeight(500))
@@ -388,19 +409,6 @@ fun TextFieldMerah(
     )
 }
 
-@Composable
-fun SimpleCircle(
-    modifier: Modifier
-) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(280.dp)
-            .background(
-                color = Warna.MerahNormal,
-                shape = RoundedCornerShape(bottomEnd = 25.dp, bottomStart = 25.dp)
-            ),
-    )
-}
+
 
 

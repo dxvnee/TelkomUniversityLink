@@ -1,12 +1,16 @@
 package org.d3if3121.telkomuniversitylink.ui.screen.user
 
 
+import android.app.Activity
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -38,8 +42,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -67,8 +74,9 @@ import org.d3if3121.telkomuniversitylink.viewmodel.UserViewModel
 @Composable
 fun RegisterPage(
     navController: NavHostController,
-
 ) {
+
+
     val viewModel: UserViewModel = viewModel()
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
@@ -83,65 +91,73 @@ fun RegisterPage(
     var emailError by remember { mutableStateOf(false) }
     var passwordError by remember { mutableStateOf(false) }
 
-    val user = User(
-        userName = userName,
+    val newUser = UserRegister(
+        username = userName,
         email = email,
         password = password
     )
-    val newUser = UserRegister(
-        password = password,
-        name = userName,
-        email = email
-    )
 
-    val registrationSuccess by viewModel.registrationSuccess.collectAsState()
-    val registrationError by viewModel.registrationError.collectAsState()
-
-    LaunchedEffect(registrationSuccess) {
-        if (registrationSuccess) {
-            Toast.makeText(context, "Registration Successfully", Toast.LENGTH_SHORT).show()
-            navController.navigate(Screen.Login.route)
-        }
-    }
-
-    LaunchedEffect(registrationError) {
-        registrationError?.let {
-            Toast.makeText(context, "Registration Failed: $it", Toast.LENGTH_SHORT).show()
-        }
-    }
+//    val registrationSuccess by viewModel.registrationSuccess.collectAsState()
+//    val registrationError by viewModel.registrationError.collectAsState()
+//
+//    LaunchedEffect(registrationSuccess) {
+//        if (registrationSuccess) {
+//            Toast.makeText(context, "Registration Successfully", Toast.LENGTH_SHORT).show()
+//            navController.navigate(Screen.Login.route)
+//        }
+//    }
+//
+//    LaunchedEffect(registrationError) {
+//        registrationError?.let {
+//            Toast.makeText(context, "Registration Failed: $it", Toast.LENGTH_SHORT).show()
+//        }
+//    }
 
 
+
+    Column(
+        modifier = Modifier.fillMaxWidth().fillMaxHeight().background(Warna.PutihNormal, RectangleShape)
+    ) {
 
         Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ){
+            Box(
+                modifier = Modifier
+                    .height(235.dp)
+                    .shadow(elevation = 15.dp)
+                    .background(Warna.MerahNormal, RoundedCornerShape(0.dp, 0.dp, 40.dp, 40.dp)),
 
 
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 38.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
                 ){
-                    Image(
-                        painter = painterResource(id = R.drawable.logo),
-                        contentDescription = "App logo",
-                        modifier = Modifier
-                            .width(120.dp)
-                            .height(120.dp)
-                            .shadow(elevation = 20.dp, shape = CircleShape)
-                    )
-
+                Column {
                     Row(
                         modifier = Modifier
-                            .height(100.dp)
+                            .fillMaxWidth()
+                            .padding(top = 35.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ){
+                        Image(
+                            painter = painterResource(id = R.drawable.logo),
+                            contentDescription = "App logo",
+                            modifier = Modifier
+                                .width(120.dp)
+                                .height(120.dp)
+                                .shadow(elevation = 20.dp, shape = CircleShape)
+                        )
+                    }
 
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
                     ) {
                         Column(
-                            modifier = Modifier
-                                .height(70.dp),
-
+                            modifier = Modifier.padding(12.dp),
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.Start
                         ) {
@@ -154,15 +170,19 @@ fun RegisterPage(
                             )
                         }
                     }
+
                 }
 
-
             }
+        }
+
+
+    }
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 250.dp, start = 20.dp, end = 20.dp, bottom = 200.dp)
-            .height(1000.dp),
+            .padding(top = 280.dp, start = 20.dp, end = 20.dp, bottom = 100.dp)
+            .height(430.dp),
 
         colors = CardDefaults.cardColors(containerColor = Warna.PutihNormal),
         elevation = CardDefaults.cardElevation(20.dp),
@@ -339,16 +359,18 @@ fun RegisterPage(
                     }
                     if (!userNameError && !emailError && !passwordError) {
                         viewModel.registerUser(newUser)
+                        navController.navigate(Screen.Login.route)
                         return@ButtonMerah
                     }
 
                 },
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(top = 20.dp)
                     .size(50.dp),
                 content = {
                     Text(
-                        text = "LOGIN",
+                        text = "REGISTER",
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
                         color = Warna.PutihNormal
@@ -358,10 +380,9 @@ fun RegisterPage(
 
             Column(
                 modifier = Modifier
-                    .fillMaxWidth(0.8f)
-                    .padding(16.dp),
+                    .fillMaxWidth().padding(top = 10.dp, start = 3.dp),
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.Start
             ) {
                 Row (
                     verticalAlignment = Alignment.CenterVertically

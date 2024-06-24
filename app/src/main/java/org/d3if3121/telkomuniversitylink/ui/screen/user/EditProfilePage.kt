@@ -38,11 +38,12 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.d3if3121.telkomuniversitylink.R
 import org.d3if3121.telkomuniversitylink.ui.theme.Warna
-import org.d3if3121.telkomuniversitylink.viewmodel.WebinarViewModel
+import org.d3if3121.telkomuniversitylink.viewmodel.UserViewModel
 
 
 @Preview(showBackground = true)
@@ -61,9 +62,8 @@ fun CobaEditProfilePage() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditProfilePage(navController: NavHostController){
-val factory = ViewModelFactroy()
 
-    val viewModel: WebinarViewModel = viewModel(factory = factory)
+    val viewModel: UserViewModel = viewModel()
     Scaffold (
         topBar = {
             Column(){

@@ -44,8 +44,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.d3if3121.telkomuniversitylink.R
-import org.d3if3121.telkomuniversitylink.model.ProjectResponse
-import org.d3if3121.telkomuniversitylink.model.WebinarResponse
+import org.d3if3121.telkomuniversitylink.model.Project
+import org.d3if3121.telkomuniversitylink.model.Webinar
 import org.d3if3121.telkomuniversitylink.ui.theme.Warna
 import org.d3if3121.telkomuniversitylink.viewmodel.UserViewModel
 
@@ -66,7 +66,6 @@ fun CobaProfilePage() {
 @Composable
 fun ProfilePage(navController: NavHostController) {
     val viewModel: UserViewModel = viewModel()
-    viewModel.loadDummyUsers()
 
     Scaffold(
         topBar = {
@@ -134,6 +133,12 @@ fun ProfileMenu(
 ) {
     val viewModel: UserViewModel = viewModel()
     val currentUser by viewModel.currentUser.collectAsState()
+
+
+    val currentProject by viewModel.currentProfile.collectAsState()
+
+
+
     //MainColumn
     Column(
         modifier = Modifier
@@ -203,19 +208,21 @@ fun ProfileMenu(
                         {
                             if (currentUser != null) {
 
+                                viewModel.getProfile(currentUser!!.userId)
+
                                 Text(
                                     textAlign = TextAlign.Center,
                                     color = Warna.HitamNormal,
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.ExtraBold,
-                                    text = currentUser!!.userName
+                                    text = currentProject!!.fullname
                                 )
                                 Text(
                                     textAlign = TextAlign.Start,
                                     color = Warna.MerahNormal,
                                     fontSize = 16.sp,
                                     fontWeight = FontWeight.Bold,
-                                    text = currentUser!!.job
+                                    text = currentProject!!.fullname
                                 )
 
                                 Spacer(modifier = Modifier.height(10.dp))
@@ -236,7 +243,7 @@ fun ProfileMenu(
                                             color = Warna.MerahNormal,
                                             fontSize = 13.sp,
                                             fontWeight = FontWeight.Normal,
-                                            text = currentUser!!.address
+                                            text = currentProject!!.location
                                         )
                                     }
 
@@ -253,7 +260,7 @@ fun ProfileMenu(
                                             color = Warna.MerahNormal,
                                             fontSize = 13.sp,
                                             fontWeight = FontWeight.Normal,
-                                            text = currentUser!!.phone
+                                            text = currentProject!!.phone
                                         )
                                     }
                                 }
@@ -390,15 +397,15 @@ fun ProfileMenu(
 
 @Composable
 private fun SlideCardProject(viewModel: UserViewModel) {
-    val projects by viewModel.groupList.collectAsState()
+    val project by viewModel.project.collectAsState()
 
 
     LazyRow(
         modifier = Modifier.padding(start = 0.dp),
         horizontalArrangement = Arrangement.spacedBy(23.dp)
     ) {
-        if (projects != null){
-            items(projects?.projects!!) {
+        if (project != null){
+            items(project!!) {
                 GrayCardProject(
                     project = it
                 )
@@ -411,7 +418,7 @@ private fun SlideCardProject(viewModel: UserViewModel) {
 }
 
 @Composable
-private fun GrayCardProject(project: ProjectResponse) {
+private fun GrayCardProject(project: Project) {
     Card(
         modifier = Modifier
             .padding()
@@ -464,12 +471,12 @@ private fun GrayCardProject(project: ProjectResponse) {
 }
 @Composable
 private fun SlideCardWebinars(viewModel: UserViewModel) {
-    val webinars by viewModel.groupList.collectAsState()
+    val webinar by viewModel.webinar.collectAsState()
     LazyRow(
         modifier = Modifier.padding(start = 0.dp),
         horizontalArrangement = Arrangement.spacedBy(23.dp)
     ) {
-        items(webinars?.webinars!!) {
+        items(webinar!!) {
             GrayCardWebinar(
                 webinar = it
             )
@@ -478,7 +485,7 @@ private fun SlideCardWebinars(viewModel: UserViewModel) {
 }
 
 @Composable
-private fun GrayCardWebinar(webinar: WebinarResponse) {
+private fun GrayCardWebinar(webinar: Webinar) {
     Card(
         modifier = Modifier
             .padding()
@@ -522,7 +529,7 @@ private fun GrayCardWebinar(webinar: WebinarResponse) {
                     color = Warna.HitamNormal,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Normal,
-                    text = webinar.title
+                    text = webinar.name
                 )
             }
 

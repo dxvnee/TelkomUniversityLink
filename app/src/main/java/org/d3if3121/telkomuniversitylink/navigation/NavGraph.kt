@@ -9,8 +9,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import org.d3if3121.telkomuniversitylink.ui.screen.user.CareerPage
 import org.d3if3121.telkomuniversitylink.ui.screen.user.ConfirmCareerPage
-import org.d3if3121.telkomuniversitylink.ui.screen.user.LandingPage
-
 import org.d3if3121.telkomuniversitylink.ui.screen.user.LoginPage
 import org.d3if3121.telkomuniversitylink.ui.screen.user.MenuPage
 import org.d3if3121.telkomuniversitylink.ui.screen.user.ProfilePage
@@ -33,10 +31,6 @@ fun SetupNavGraph(navController: NavHostController = rememberNavController()){
             LoginPage(navController)
         }
 
-        composable(route = Screen.LandingPage.route){
-            LandingPage(navController)
-        }
-
         composable(route = Screen.Register.route){
             RegisterPage(navController)
         }
@@ -48,18 +42,6 @@ fun SetupNavGraph(navController: NavHostController = rememberNavController()){
         composable(route = Screen.ProfilePage.route){
             ProfilePage(navController)
         }
-
-//        composable(
-//            route = Screen.FormUbah.route,
-//            arguments = listOf(
-//                navArgument(KEY_ID_CATATAN){
-//                    type = NavType.LongType
-//                }
-//            )
-//        ){ navBackStackEntry ->
-//            val id = navBackStackEntry.arguments?.getLong(KEY_ID_CATATAN)
-//            DetailScreen(navController, id)
-//        }
 
         composable(route = Screen.CareerPage.route){
             CareerPage(navController)
@@ -79,7 +61,7 @@ fun SetupNavGraph(navController: NavHostController = rememberNavController()){
             )
         ){ navBackStackEntry ->
             val id = navBackStackEntry.arguments?.getInt(KEY_ID_PROJECT)
-            ConfirmCareerPage(navController, id!!)
+            ConfirmCareerPage(navController, id.toString()!!)
         }
 
         //BottomBar

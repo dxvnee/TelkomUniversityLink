@@ -20,7 +20,7 @@ sealed class Screen(val route: String) {
     data object ProfilePage: Screen("profilePage")
 
     data object ConfirmCareerPage: Screen("confirmCareerPage/{$KEY_ID_PROJECT}") {
-        fun withId(id: Int) = "confirmCareerPage/$id"
+        fun withId(id: String) = "confirmCareerPage/$id"
     }
     data object ConfirmSkillPage: Screen("confirmSkillPage")
 }

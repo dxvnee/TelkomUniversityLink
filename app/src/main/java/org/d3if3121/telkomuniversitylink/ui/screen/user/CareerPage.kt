@@ -11,12 +11,15 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -38,10 +41,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.d3if3121.telkomuniversitylink.R
-import org.d3if3121.telkomuniversitylink.model.ProjectResponse
+import org.d3if3121.telkomuniversitylink.model.Project
 import org.d3if3121.telkomuniversitylink.navigation.Screen
 import org.d3if3121.telkomuniversitylink.ui.theme.Warna
-import org.d3if3121.telkomuniversitylink.viewmodel.ProjectViewModel
+import org.d3if3121.telkomuniversitylink.viewmodel.UserViewModel
 
 @Preview(showBackground = true)
 @Composable
@@ -58,7 +61,7 @@ fun CobaCareerPage() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CareerPage(navController: NavHostController) {
-    val viewModel: ProjectViewModel = viewModel()
+    val viewModel: UserViewModel = viewModel()
     Scaffold(
         topBar = {
             Column() {
@@ -122,7 +125,7 @@ fun CareerPage(navController: NavHostController) {
 @Composable
 fun MenuCareer(
     topbarpadding: PaddingValues,
-    viewModel: ProjectViewModel,
+    viewModel: UserViewModel,
     navController: NavHostController
 ) {
 
@@ -170,31 +173,34 @@ fun MenuCareer(
 }
 
 @Composable
-fun SlideVerticalCard(viewModel: ProjectViewModel, navController: NavHostController) {
-    val projectList by viewModel.projectList.collectAsState()
+fun SlideVerticalCard(viewModel: UserViewModel, navController: NavHostController) {
+    val projectList by viewModel.project.collectAsState()
 
     if (projectList != null) {
         LazyColumn(
             modifier = Modifier.padding(start = 0.dp),
             verticalArrangement = Arrangement.spacedBy(23.dp)
         ) {
-            items(projectList!!) {
+            items(projectList) {
                 GrayVerticalCard(
                     project = it
                 ) {
-                    navController.navigate(Screen.ConfirmCareerPage.withId(it.id))
+                    navController.navigate(Screen.ConfirmCareerPage.withId(it.projectId))
                 }
             }
         }
+
+
     } else {
         Text("Tidak ada project.")
     }
 }
 
 
+
 @Composable
 fun GrayVerticalCard(
-    project: ProjectResponse,
+    project: Project,
     onClick: () -> Unit
 ) {
     GrayBox(height = 160) {
@@ -242,7 +248,7 @@ fun GrayVerticalCard(
                             color = Warna.MerahNormal,
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
-                            text = project.subtitle
+                            text = project.company
                         )
 
                         Spacer(modifier = Modifier.height(10.dp))
@@ -263,7 +269,7 @@ fun GrayVerticalCard(
                                 color = Warna.HitamNormal,
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Normal,
-                                text = project.detail
+                                text = project.content
                             )
                         }
                     }
