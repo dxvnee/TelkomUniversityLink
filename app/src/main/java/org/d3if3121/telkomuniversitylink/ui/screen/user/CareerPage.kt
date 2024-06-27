@@ -27,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -44,6 +45,7 @@ import org.d3if3121.telkomuniversitylink.R
 import org.d3if3121.telkomuniversitylink.model.Project
 import org.d3if3121.telkomuniversitylink.navigation.Screen
 import org.d3if3121.telkomuniversitylink.ui.theme.Warna
+import org.d3if3121.telkomuniversitylink.viewmodel.ContentViewModel
 import org.d3if3121.telkomuniversitylink.viewmodel.UserViewModel
 
 @Preview(showBackground = true)
@@ -61,7 +63,13 @@ fun CobaCareerPage() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CareerPage(navController: NavHostController) {
-    val viewModel: UserViewModel = viewModel()
+    val viewModel: ContentViewModel = viewModel()
+
+
+    LaunchedEffect(viewModel.status){
+        viewModel.getAllProject()
+    }
+
     Scaffold(
         topBar = {
             Column() {
@@ -105,12 +113,8 @@ fun CareerPage(navController: NavHostController) {
                         .fillMaxWidth()
                         .size(5.dp)
                         .padding(0.dp)
-
-
                 )
             }
-
-
         },
         bottomBar = {
             BottomBar(navController = navController)
@@ -125,7 +129,7 @@ fun CareerPage(navController: NavHostController) {
 @Composable
 fun MenuCareer(
     topbarpadding: PaddingValues,
-    viewModel: UserViewModel,
+    viewModel: ContentViewModel,
     navController: NavHostController
 ) {
 
@@ -134,11 +138,9 @@ fun MenuCareer(
         modifier = Modifier
             .padding(topbarpadding)
 
-
     ) {
 
         //ImageColumn
-
 
         Row(
             modifier = Modifier
@@ -173,8 +175,8 @@ fun MenuCareer(
 }
 
 @Composable
-fun SlideVerticalCard(viewModel: UserViewModel, navController: NavHostController) {
-    val projectList by viewModel.project.collectAsState()
+fun SlideVerticalCard(viewModel: ContentViewModel, navController: NavHostController) {
+    val projectList by viewModel.projectData.collectAsState()
 
     if (projectList != null) {
         LazyColumn(
@@ -189,8 +191,6 @@ fun SlideVerticalCard(viewModel: UserViewModel, navController: NavHostController
                 }
             }
         }
-
-
     } else {
         Text("Tidak ada project.")
     }

@@ -1,6 +1,7 @@
 package org.d3if3121.telkomuniversitylink.ui.screen.user
 
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -33,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,6 +45,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -52,7 +55,7 @@ import androidx.navigation.compose.rememberNavController
 import org.d3if3121.telkomuniversitylink.navigation.BottomBarScreen
 import org.d3if3121.telkomuniversitylink.R
 import org.d3if3121.telkomuniversitylink.ui.theme.Warna
-
+import org.d3if3121.telkomuniversitylink.viewmodel.UserViewModel
 
 
 @Preview(showBackground = true)
@@ -63,14 +66,19 @@ fun MenuPreview() {
 
 @Composable
 fun CobaMenuPage() {
-    MenuPage(rememberNavController())
+    MenuPage(rememberNavController(), viewModel())
 }
+
+
 
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MenuPage(navController: NavHostController){
+fun MenuPage(navController: NavHostController, viewModel: UserViewModel){
+
+
+    val currentUser by viewModel.currentUser.collectAsState()
 
 
     Scaffold (
@@ -97,8 +105,9 @@ fun MenuPage(navController: NavHostController){
                             Text(
                                 color = Warna.PutihNormal,
                                 fontWeight = FontWeight.Bold,
-                                text = stringResource(id = R.string.welcome)
+                                text = "Welcome ${currentUser.username}"
                             )
+
                         }
 
                     },

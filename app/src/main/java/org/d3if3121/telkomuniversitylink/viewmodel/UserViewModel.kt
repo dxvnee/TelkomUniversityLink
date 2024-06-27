@@ -17,8 +17,11 @@ import org.d3if3121.telkomuniversitylink.model.Profile
 import org.d3if3121.telkomuniversitylink.model.Project
 import org.d3if3121.telkomuniversitylink.model.UserRegister
 import org.d3if3121.telkomuniversitylink.model.User
+import org.d3if3121.telkomuniversitylink.model.UserLogin
 import org.d3if3121.telkomuniversitylink.model.Webinar
+import org.d3if3121.telkomuniversitylink.network.ApiStatus
 import org.d3if3121.telkomuniversitylink.network.UserApi
+import java.util.Optional.empty
 
 class UserViewModel : ViewModel() {
 
@@ -28,9 +31,19 @@ class UserViewModel : ViewModel() {
         private set
     var loginSuccess = mutableStateOf<Boolean?>(false)
         private set
+    var loginError = mutableStateOf<Boolean?>(false)
+        private set
 
-    private var _currentUser = MutableStateFlow<User?>(null)
-    val currentUser: StateFlow<User?> = _currentUser
+    var registerSuccess = mutableStateOf<Boolean?>(false)
+        private set
+
+    var registerError = mutableStateOf<String?>("Username cannot be empty")
+        private set
+    var registerErrorBoolean = mutableStateOf<Boolean>(false)
+        private set
+
+    private var _currentUser = MutableStateFlow<User>(User())
+    val currentUser: StateFlow<User> = _currentUser
 
     private var _currentProfile = MutableStateFlow<Profile?>(null)
     val currentProfile: StateFlow<Profile?> = _currentProfile
@@ -48,7 +61,9 @@ class UserViewModel : ViewModel() {
                 val result = UserApi.service.registerUser(user)
 
                 if (result.status == "success")
+                    registerSuccess.value = true
                 else
+                    registerErrorBoolean.value = true
                     throw Exception(result.message)
 
             } catch (e: Exception) {
@@ -57,17 +72,25 @@ class UserViewModel : ViewModel() {
         }
     }
 
-    fun loginUser(email: String, password: String) {
+    fun loginUser(user: UserLogin) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val result = UserApi.service.loginUser(email, password)
+                val result = UserApi.service.loginUser(user)
+                Log.d("User: ", user.toString())
 
-                if (result.message == "Failed") {
-                    errorMessage.value = "Username/password doesn't match!"
+                if (result.message == "User error" || result.message == "Password error") {
+                    loginError.value = true
                 }
+
                 if (result.message == "Success") {
                     _currentUser.value = UserApi.service.getUser(result.userId!!)
-                    loginSuccess.value = true
+                    if (_currentUser.value != null){
+                        Log.d("HEHEHE ", result.toString())
+                        Log.d("HEHEHE ", result.userId.toString())
+                        Log.d("HEHEHE ", currentUser.value!!.toString())
+                        loginError.value = false
+                        loginSuccess.value = true
+                    }
                 }
 
             } catch (e: Exception) {
@@ -76,42 +99,7 @@ class UserViewModel : ViewModel() {
         }
     }
 
-    fun getProfile(userId: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val result = UserApi.service.getProfile(userId);
 
-            } catch (e: Exception) {
-                Log.d("UserViewModel-getUser", "Failure: ${e.message}")
-            }
-        }
-    }
-
-    fun getProject(userId: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val result = UserApi.service.getProject()
-                _project.value = result
-
-            } catch (e: Exception) {
-                Log.d("UserViewModel-getUser", "Failure: ${e.message}")
-            }
-        }
-    }
-
-    fun getWebinar(userId: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val result = UserApi.service.getWebinar()
-                _webinar.value = result
-
-            } catch (e: Exception) {
-                Log.d("UserViewModel-getUser", "Failure: ${e.message}")
-            }
-        }
-    }
 
 
 }
-
-enum class ApiStatus { LOADING, SUCCESS, FAILED }

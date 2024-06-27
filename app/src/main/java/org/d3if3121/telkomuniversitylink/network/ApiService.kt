@@ -1,6 +1,7 @@
 package org.d3if3121.telkomuniversitylink.network
 
 
+import android.util.Log
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import org.d3if3121.telkomuniversitylink.model.LoginStatus
@@ -9,6 +10,7 @@ import org.d3if3121.telkomuniversitylink.model.Profile
 import org.d3if3121.telkomuniversitylink.model.Project
 import org.d3if3121.telkomuniversitylink.model.UserRegister
 import org.d3if3121.telkomuniversitylink.model.User
+import org.d3if3121.telkomuniversitylink.model.UserLogin
 import org.d3if3121.telkomuniversitylink.model.Webinar
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -18,7 +20,7 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Path
 
-private const val BASE_URL = "https://929d-139-228-112-175.ngrok-free.app"
+private const val BASE_URL = "https://2cb5-2404-8000-1024-18ef-70d4-c272-f1d8-e713.ngrok-free.app/"
 
 private val moshi = Moshi.Builder()
     .add(KotlinJsonAdapterFactory())
@@ -30,42 +32,56 @@ private val retrofit = Retrofit.Builder()
     .build()
 
 interface ApiService {
-    @POST("/register")
+    //User
+    @POST("/telulink/register")
     suspend fun registerUser(
         @Body request: UserRegister
     ): OpStatus
 
-    @POST("/login")
+    @POST("/telulink/login")
     suspend fun loginUser(
-        @Body username: String,
-        @Body password: String,
+        @Body user: UserLogin,
     ): LoginStatus
 
-    @GET("/getUser/{id}")
+    @GET("/telulink/getUser/{id}")
     suspend fun getUser(
         @Path("id") userId: String,
     ): User
 
-    @GET("/getProfile")
+    //Content
+    @GET("/telulink/webinar")
+    suspend fun getAllWebinar(): List<Webinar>
+    @GET("/telulink/webinar/{contentId}")
+    suspend fun getWebinarById(
+        @Path("contentId") webinarId: String
+    ): Webinar
+
+    @GET("/telulink/project/{contentId}")
+    suspend fun getProjectById(
+        @Path("contentId") projectId: String
+    ): Project
+
+    @GET("/telulink/project")
+    suspend fun getAllProject(): List<Project>
+
+    //Profile
+
+    @GET("/telulink/profile")
     suspend fun getProfile(
-        @Header("Authorization") username: String,
+        @Header("Authorization") username: String
     ): Profile
-
-    @GET("/project")
-    suspend fun getProject(
-    ): List<Project>
-
-    @GET("/webinar")
-    suspend fun getWebinar(
-    ): List<Webinar>
-
 
 
 }
 
 object UserApi {
     val service: ApiService by lazy {
-        retrofit.create(ApiService::class.java)
+        try {
+            retrofit.create(ApiService::class.java)
+        } catch (e: Exception) {
+            Log.e("UserApi", "Error creating ApiService", e)
+            throw e
+        }
     }
 }
 

@@ -61,6 +61,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.d3if3121.telkomuniversitylink.R
 import org.d3if3121.telkomuniversitylink.model.UserRegister
 import org.d3if3121.telkomuniversitylink.model.User
@@ -74,10 +75,11 @@ import org.d3if3121.telkomuniversitylink.viewmodel.UserViewModel
 @Composable
 fun RegisterPage(
     navController: NavHostController,
+    viewModel: UserViewModel
 ) {
 
 
-    val viewModel: UserViewModel = viewModel()
+
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
 
@@ -88,8 +90,14 @@ fun RegisterPage(
     var passwordVisible by remember { mutableStateOf(false) }
 
     var userNameError by remember { mutableStateOf(false) }
+    var userNameErrorContext by remember { mutableStateOf("Username cannot be empty") }
     var emailError by remember { mutableStateOf(false) }
     var passwordError by remember { mutableStateOf(false) }
+
+    var registerSuccess by viewModel.registerSuccess
+    var registerError by viewModel.registerError
+    var registerErrorBoolean by viewModel.registerErrorBoolean
+
 
     val newUser = UserRegister(
         username = userName,
@@ -97,26 +105,28 @@ fun RegisterPage(
         password = password
     )
 
-//    val registrationSuccess by viewModel.registrationSuccess.collectAsState()
-//    val registrationError by viewModel.registrationError.collectAsState()
-//
-//    LaunchedEffect(registrationSuccess) {
-//        if (registrationSuccess) {
-//            Toast.makeText(context, "Registration Successfully", Toast.LENGTH_SHORT).show()
-//            navController.navigate(Screen.Login.route)
-//        }
-//    }
-//
-//    LaunchedEffect(registrationError) {
-//        registrationError?.let {
-//            Toast.makeText(context, "Registration Failed: $it", Toast.LENGTH_SHORT).show()
-//        }
-//    }
+    LaunchedEffect(registerSuccess) {
+        if (registerSuccess!!) {
+            Toast.makeText(context, "Registration Successfully", Toast.LENGTH_SHORT).show()
+            navController.navigate(Screen.Login.route)
+        }
+    }
+
+    LaunchedEffect(registerErrorBoolean) {
+        if (registerErrorBoolean) {
+            userNameErrorContext = "Username already exist!"
+        }
+    }
+
+
 
 
 
     Column(
-        modifier = Modifier.fillMaxWidth().fillMaxHeight().background(Warna.PutihNormal, RectangleShape)
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .background(Warna.PutihNormal, RectangleShape)
     ) {
 
         Column(
@@ -178,11 +188,17 @@ fun RegisterPage(
 
 
     }
+    val cardHeight = remember { mutableStateOf<Int?>(0) }
+        if (userNameError || emailError || passwordError){
+            cardHeight.value = 430
+        } else {
+            cardHeight.value = 390
+        }
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 280.dp, start = 20.dp, end = 20.dp, bottom = 100.dp)
-            .height(430.dp),
+            .height(cardHeight.value!!.dp),
 
         colors = CardDefaults.cardColors(containerColor = Warna.PutihNormal),
         elevation = CardDefaults.cardElevation(20.dp),
@@ -191,212 +207,238 @@ fun RegisterPage(
     )
     {
         Column(
-            modifier = Modifier.padding(start = 24.dp, top = 18.dp, end = 24.dp)
+            modifier = Modifier.padding(start = 24.dp, top = 18.dp, end = 24.dp, bottom = 18.dp).fillMaxHeight()
         ) {
-            Text(
-                text = "Register",
-                color = Warna.MerahNormal,
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold,
-
-                )
-            Spacer(modifier = Modifier.height(14.dp))
-
-            OutlinedTextField(
-                value = userName,
-                onValueChange = { userName = it },
-                placeholder = {
+            Row(
+                verticalAlignment = Alignment.Top
+            ){
+                Column {
                     Text(
-                        text = "Username",
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 14.sp,
-                        color = Warna.AbuNormal
+                        text = "Register",
+                        color = Warna.MerahNormal,
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold,
+
+                        )
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    OutlinedTextField(
+                        value = userName,
+                        onValueChange = { userName = it },
+                        placeholder = {
+                            Text(
+                                text = "Username",
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 14.sp,
+                                color = Warna.AbuNormal
+                            )
+                        },
+                        singleLine = true,
+                        isError = userNameError,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(10.dp, 10.dp))
+                            .height(70.dp)
+                            .padding(vertical = 8.dp),
+                        textStyle = TextStyle(
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 14.sp,
+                            color = Warna.HitamNormal
+                        ),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Warna.MerahNormal,
+                            unfocusedBorderColor = Warna.MerahNormal,
+                            focusedLabelColor = Warna.MerahNormal,
+                            unfocusedLabelColor = Warna.AbuNormal,
+                        ),
+
+                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                        keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(
+                            FocusDirection.Down) }),
+                        shape = RoundedCornerShape(15.dp),
                     )
-                },
-                singleLine = true,
-                isError = userNameError,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(10.dp, 10.dp))
-                    .height(70.dp)
-                    .padding(vertical = 8.dp),
-                textStyle = TextStyle(
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 14.sp,
-                    color = Warna.HitamNormal
-                ),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Warna.MerahNormal,
-                    unfocusedBorderColor = Warna.MerahNormal,
-                    focusedLabelColor = Warna.MerahNormal,
-                    unfocusedLabelColor = Warna.AbuNormal,
-                ),
+                    if (userNameError) {
+                        Text(
+                            text = userNameErrorContext,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                    if (registerErrorBoolean) {
+                        Text(
+                            text = userNameErrorContext,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
 
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
-                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(
-                    FocusDirection.Down) }),
-                shape = RoundedCornerShape(15.dp),
-            )
-            if (userNameError) {
-                Text(
-                    text = "Username cannot be empty",
-                    color = MaterialTheme.colorScheme.error
-                )
-            }
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                placeholder = {
-                    Text(
-                        text = "Email",
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 14.sp,
-                        color = Warna.AbuNormal
+                    OutlinedTextField(
+                        value = email,
+                        onValueChange = { email = it },
+                        placeholder = {
+                            Text(
+                                text = "Email",
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 14.sp,
+                                color = Warna.AbuNormal
+                            )
+                        },
+                        singleLine = true,
+                        isError = emailError,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(10.dp, 10.dp))
+                            .height(70.dp)
+                            .padding(vertical = 8.dp),
+                        textStyle = TextStyle(
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 14.sp,
+                            color = Warna.HitamNormal
+                        ),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Warna.MerahNormal,
+                            unfocusedBorderColor = Warna.MerahNormal,
+                            focusedLabelColor = Warna.MerahNormal,
+                            unfocusedLabelColor = Warna.AbuNormal,
+                        ),
+
+                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                        keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(
+                            FocusDirection.Down) }),
+                        shape = RoundedCornerShape(15.dp),
                     )
-                },
-                singleLine = true,
-                isError = emailError,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(10.dp, 10.dp))
-                    .height(70.dp)
-                    .padding(vertical = 8.dp),
-                textStyle = TextStyle(
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 14.sp,
-                    color = Warna.HitamNormal
-                ),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Warna.MerahNormal,
-                    unfocusedBorderColor = Warna.MerahNormal,
-                    focusedLabelColor = Warna.MerahNormal,
-                    unfocusedLabelColor = Warna.AbuNormal,
-                ),
+                    if (emailError) {
+                        Text(
+                            text = "Email cannot be empty",
+                            color = MaterialTheme.colorScheme.error,
 
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
-                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(
-                    FocusDirection.Down) }),
-                shape = RoundedCornerShape(15.dp),
-            )
-            if (emailError) {
-                Text(
-                    text = "Email cannot be empty",
-                    color = MaterialTheme.colorScheme.error
-                )
-            }
+                            )
+                    }
 
 
 
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                placeholder = {
-                    Text(
-                        text = "Password",
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 14.sp,
-                        color = Warna.AbuNormal
+
+                    OutlinedTextField(
+                        value = password,
+                        onValueChange = { password = it },
+                        placeholder = {
+                            Text(
+                                text = "Password",
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 14.sp,
+                                color = Warna.AbuNormal
+                            )
+                        },
+                        singleLine = true,
+                        isError = passwordError,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(10.dp, 10.dp))
+                            .height(70.dp)
+                            .padding(vertical = 8.dp),
+                        textStyle = TextStyle(
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 14.sp,
+                            color = Warna.HitamNormal
+                        ),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Warna.MerahNormal,
+                            unfocusedBorderColor = Warna.MerahNormal,
+                            focusedLabelColor = Warna.MerahNormal,
+                            unfocusedLabelColor = Warna.AbuNormal,
+                        ),
+
+                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(
+                            FocusDirection.Down) }),
+                        shape = RoundedCornerShape(15.dp),
+                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        trailingIcon = {
+                            val image =
+                                if (passwordVisible) painterResource(id = R.drawable.baseline_visibility_24)
+                                else painterResource(id = R.drawable.baseline_visibility_off_24)
+
+                            IconButton(onClick = {
+                                passwordVisible = !passwordVisible
+                            }) {
+                                Icon(
+                                    painter = image,
+                                    contentDescription = if (passwordVisible) "Hide password" else "Show password",
+                                    tint = Warna.MerahNormal
+                                )
+                            }
+                        }
                     )
-                },
-                singleLine = true,
-                isError = passwordError,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(10.dp, 10.dp))
-                    .height(70.dp)
-                    .padding(vertical = 8.dp),
-                textStyle = TextStyle(
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 14.sp,
-                    color = Warna.HitamNormal
-                ),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Warna.MerahNormal,
-                    unfocusedBorderColor = Warna.MerahNormal,
-                    focusedLabelColor = Warna.MerahNormal,
-                    unfocusedLabelColor = Warna.AbuNormal,
-                ),
-
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(
-                    FocusDirection.Down) }),
-                shape = RoundedCornerShape(15.dp),
-                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                trailingIcon = {
-                    val image =
-                        if (passwordVisible) painterResource(id = R.drawable.baseline_visibility_24)
-                        else painterResource(id = R.drawable.baseline_visibility_off_24)
-
-                    IconButton(onClick = {
-                        passwordVisible = !passwordVisible
-                    }) {
-                        Icon(
-                            painter = image,
-                            contentDescription = if (passwordVisible) "Hide password" else "Show password",
-                            tint = Warna.MerahNormal
+                    if (passwordError) {
+                        Text(
+                            text = "Password cannot be empty",
+                            color = MaterialTheme.colorScheme.error
                         )
                     }
                 }
-            )
-            if (passwordError) {
-                Text(
-                    text = "Password cannot be empty",
-                    color = MaterialTheme.colorScheme.error
-                )
             }
 
 
 
-
-            ButtonMerah(
-                onClick = {
-                    userNameError = userName.isEmpty()
-                    emailError = email.isEmpty()
-                    passwordError = password.isEmpty()
-
-                    if (userNameError || emailError || passwordError ) {
-                        return@ButtonMerah
-                    }
-                    if (!userNameError && !emailError && !passwordError) {
-                        viewModel.registerUser(newUser)
-                        navController.navigate(Screen.Login.route)
-                        return@ButtonMerah
-                    }
-
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 20.dp)
-                    .size(50.dp),
-                content = {
-                    Text(
-                        text = "REGISTER",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
-                        color = Warna.PutihNormal
-                    )
-                }
-            )
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth().padding(top = 10.dp, start = 3.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.Start
-            ) {
-                Row (
-                    verticalAlignment = Alignment.CenterVertically
+            Row (
+                modifier = Modifier.fillMaxHeight(),
+                verticalAlignment = Alignment.Bottom
+            ){
+                Column (
+                    verticalArrangement = Arrangement.Bottom
                 ){
-                    Text(text = "Already have an account? ", fontSize = 13.sp,fontWeight = FontWeight(500))
-                    ClickableText(
-                        text = AnnotatedString("Login"),
+
+                    ButtonMerah(
                         onClick = {
-                            navController.navigate(Screen.Login.route)
+                            userNameError = userName.isEmpty()
+                            emailError = email.isEmpty()
+                            passwordError = password.isEmpty()
+
+                            if (userNameError || emailError || passwordError ) {
+                                return@ButtonMerah
+                            }
+                            if (!userNameError && !emailError && !passwordError) {
+                                viewModel.registerUser(newUser)
+                            }
+
+
                         },
-                        style = TextStyle.Default.copy(Warna.MerahNormal,fontSize = 13.sp, fontWeight = FontWeight(500))
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 20.dp)
+                            .size(50.dp),
+                        content = {
+                            Text(
+                                text = "REGISTER",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp,
+                                color = Warna.PutihNormal
+                            )
+                        }
                     )
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 10.dp, start = 3.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        Row (
+                            verticalAlignment = Alignment.CenterVertically
+                        ){
+                            Text(text = "Already have an account? ", fontSize = 14.sp,fontWeight = FontWeight(500))
+                            ClickableText(
+                                text = AnnotatedString("Login"),
+                                onClick = {
+                                    navController.navigate(Screen.Login.route)
+                                },
+                                style = TextStyle.Default.copy(Warna.MerahNormal,fontSize = 14.sp, fontWeight = FontWeight(500))
+                            )
+                        }
+                    }
                 }
+
             }
+
 
 
 
@@ -411,5 +453,5 @@ fun RegisterPage(
 @Preview(showBackground = true)
 @Composable
 fun RegisterPreview() {
-    RegisterPage(rememberNavController())
+    RegisterPage(rememberNavController(), viewModel())
 }
